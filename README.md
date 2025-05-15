@@ -1,67 +1,72 @@
-## Foundry
+ZKVerifyDeFi - README
+ZKVerifyDeFi
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+Visão Geral
 
-Foundry consists of:
+ZKVerifyDeFi é um contrato inteligente desenvolvido para participação em um hackathon da ZKVerify. Ele oferece uma plataforma simples e segura para investidores amadores entrarem em pools de liquidez com níveis de risco definidos (baixo, médio e alto), utilizando proteção de privacidade com zk-SNARKs, integração com Chainlink para APY dinâmico e funções como recompensas compostas, retirada parcial e commit-reveal contra front-running.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+------------------------------
 
-## Documentation
+Funcionalidades
 
-https://book.getfoundry.sh/
+- Criação de pools com diferentes níveis de risco
+- Sistema de commit-reveal para depósito protegido
+- Saques com proteção de identidade (ZK)
+- Recompensas compostas (APY)
+- Cálculo dinâmico de rendimento com Chainlink
+- Retirada parcial de fundos
+- Integração com tokens ERC-20
+- Sistema de verificação com zk-SNARKs (mock para testes)
+- Simples de usar para usuários leigos
 
-## Usage
+------------------------------
 
-### Build
+Estrutura
 
-```shell
-$ forge build
+Pool
+- Token da pool (ERC20)
+- Verificador ZK (mock ou real)
+- Total depositado
+- Depósitos individuais por endereço
+
+Funções principais
+- `createPool`: cria nova pool
+- `commitDeposit`: usuário inicia um depósito com hash
+- `revealDeposit`: revela o valor e efetiva o depósito
+- `withdraw`: realiza o saque total com verificação ZK
+- `partialWithdraw`: realiza um saque parcial
+- `calculateAPY`: retorna APY simulado com Chainlink
+
+------------------------------
+
+Segurança
+
+- Proteção contra front-running (commit-reveal)
+- Verificação ZK para anonimato
+- Apenas o usuário pode sacar seus fundos
+- Chainlink para dados de rendimento seguros
+
+------------------------------
+
+Como usar
+
+1. Crie uma pool com `createPool`
+2. Usuário chama `commitDeposit(hash)`
+3. Usuário chama `revealDeposit(value, salt)` com a prova
+4. Pode sacar total ou parcialmente
+
+------------------------------
+
+Testes com Foundry
+
+O projeto inclui testes em `test/ZKVerifyDeFi.t.sol` e simula o token ERC20 em `MockERC20.sol`. Para rodar os testes:
+
+```bash
+forge test
 ```
 
-### Test
+------------------------------
 
-```shell
-$ forge test
-```
+Considerações
 
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
-# froundry
+Este contrato é voltado para testes em testnet e demonstração do conceito de uma plataforma DeFi amigável, segura e acessível a todos.
