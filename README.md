@@ -1,72 +1,86 @@
-ZKVerifyDeFi - README
-ZKVerifyDeFi
+# zkVerify DeFi Protocol
 
-Visão Geral
+Este projeto é uma aplicação DeFi construída para o hackaton da zkVerify. O objetivo é fornecer uma plataforma simplificada para investidores tradicionais aplicarem seus fundos em pools de liquidez com diferentes níveis de risco, integrando privacidade com zkVerify, segurança contra ataques como front-running e yield dinâmico com Chainlink.
 
-ZKVerifyDeFi é um contrato inteligente desenvolvido para participação em um hackathon da ZKVerify. Ele oferece uma plataforma simples e segura para investidores amadores entrarem em pools de liquidez com níveis de risco definidos (baixo, médio e alto), utilizando proteção de privacidade com zk-SNARKs, integração com Chainlink para APY dinâmico e funções como recompensas compostas, retirada parcial e commit-reveal contra front-running.
+## Funcionalidades
 
-------------------------------
+- Registro de investimentos em pools via carteira conectada (zkVerify).
+- Suporte a tokens ERC-20 e ETH.
+- Retirada total ou parcial de investimentos.
+- Proteção contra front-running com esquema commit-reveal.
+- Cálculo de yield dinâmico com Chainlink (APR e APY compostos).
+- Restrições de saque (apenas quem investiu pode sacar).
+- Transparência com logs de eventos.
+- Adaptado para ser executado na testnet.
 
-Funcionalidades
+## Estrutura do Projeto
 
-- Criação de pools com diferentes níveis de risco
-- Sistema de commit-reveal para depósito protegido
-- Saques com proteção de identidade (ZK)
-- Recompensas compostas (APY)
-- Cálculo dinâmico de rendimento com Chainlink
-- Retirada parcial de fundos
-- Integração com tokens ERC-20
-- Sistema de verificação com zk-SNARKs (mock para testes)
-- Simples de usar para usuários leigos
+```
+zkverify-defi/
+├── src/
+│   └── zkVerifyDeFi.sol
+├── test/
+│   └── zkVerifyDeFi.t.sol
+├── lib/
+├── foundry.toml
+└── README.md
+```
 
-------------------------------
+## Uso com Foundry
 
-Estrutura
+### 1. Instale o Foundry
 
-Pool
-- Token da pool (ERC20)
-- Verificador ZK (mock ou real)
-- Total depositado
-- Depósitos individuais por endereço
+```bash
+curl -L https://foundry.paradigm.xyz | bash
+foundryup
+```
 
-Funções principais
-- `createPool`: cria nova pool
-- `commitDeposit`: usuário inicia um depósito com hash
-- `revealDeposit`: revela o valor e efetiva o depósito
-- `withdraw`: realiza o saque total com verificação ZK
-- `partialWithdraw`: realiza um saque parcial
-- `calculateAPY`: retorna APY simulado com Chainlink
+### 2. Clone e instale dependências
 
-------------------------------
+```bash
+git clone https://github.com/seuusuario/zkverify-defi.git
+cd zkverify-defi
+forge install
+```
 
-Segurança
-
-- Proteção contra front-running (commit-reveal)
-- Verificação ZK para anonimato
-- Apenas o usuário pode sacar seus fundos
-- Chainlink para dados de rendimento seguros
-
-------------------------------
-
-Como usar
-
-1. Crie uma pool com `createPool`
-2. Usuário chama `commitDeposit(hash)`
-3. Usuário chama `revealDeposit(value, salt)` com a prova
-4. Pode sacar total ou parcialmente
-
-------------------------------
-
-Testes com Foundry
-
-O projeto inclui testes em `test/ZKVerifyDeFi.t.sol` e simula o token ERC20 em `MockERC20.sol`. Para rodar os testes:
+### 3. Execute os testes
 
 ```bash
 forge test
 ```
 
-------------------------------
+## Variáveis Importantes no Contrato
 
-Considerações
+- `investors`: Mapeamento de quem investiu e quanto.
+- `commits`: Proteção contra front-running usando commit-reveal.
+- `apy`: Valor anual de rendimento com base em Chainlink.
+- `rewards`: Armazena recompensas de cada investidor.
 
-Este contrato é voltado para testes em testnet e demonstração do conceito de uma plataforma DeFi amigável, segura e acessível a todos.
+## Fluxo de Investimento
+
+1. O usuário realiza `commitInvestment(hash)`.
+2. Após o delay, chama `revealInvestment(value, tokenAddress, poolId)`.
+3. O contrato valida o hash e registra o investimento.
+4. O usuário pode visualizar `getYield` e realizar `partialWithdraw` ou `withdraw` total.
+
+## Como são escolhidas as melhores pools?
+
+Por trás, o frontend coleta via API:
+
+- TVL
+- Volume diário
+- Histórico de rendimento (APR/APY)
+- Relação risco: stable/stable, alt/stable, alt/alt
+
+E apresenta de forma simplificada (baixo, médio e alto risco).
+
+## Segurança
+
+- **Commit-reveal**: Protege contra front-running.
+- **Only investor**: Apenas quem investiu pode sacar.
+- **zkVerify**: Integração com sistema de verificação anônima para proteger a identidade do investidor.
+- **Chainlink**: Usa oráculo para garantir dados externos confiáveis de APY.
+
+---
+
+Desenvolvido para o hackaton da zkVerify. Testado com Foundry. Qualquer dúvida, entre em contato com os desenvolvedores.
